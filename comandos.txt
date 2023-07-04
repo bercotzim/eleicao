@@ -1,0 +1,112 @@
+#Gerar Chave Privada
+openssl genrsa -out minhaChavePrivada.pem
+#Gerar Chave Publica
+openssl rsa -in minhaChavePrivada.pem -pubout -out minhaChavePublica.pem
+#Cifrar
+openssl rsautl -encrypt -inkey 12345_public.pem -pubin -in segredo.txt -out segredo.txt.enc
+#Decifrar
+openssl rsautl -decrypt -inkey 12345_private.pem -in segredo.txt.enc -out segredo-revelado.txt
+
+
+2-
+openssl genpkey -paramfile chave-global.pem -out privTEscolha.pem
+
+openssl pkey -in privTEscolha.pem -pubout -out publicTEscolha.pem
+
+o
+
+openssl enc -aes-256-cbc -salt -in segredo.txt -out segredo_encrypted.enc -pass file:publicTEscolha.pem
+
+openssl enc -aes-256-cbc -d -salt -in segredo_encrypted.enc -out segredo_decrypted.txt -pass file:publicTEscolha.pem
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Central:
+Vai acontecer antes de tudo.
+
+Gerar Chave Privada:
+    openssl genrsa -aes-256-cbc -passout pass:asdfg -out pendrive/12345_private.pem 4096
+PHP(openssl genrsa -aes-256-cbc -passout pass:\"".$privateKeyPassphrase."\" -out ".$privateKeyPath." 4096")
+
+Gerar Chave Pública:
+    openssl rsa -in pendrive/12345_private.pem -pubout -passin pass:asdfg -out 12345_public.pem
+PHP(openssl rsa -in ".$privateKeyPath." -pubout -passin pass:\"".$privateKeyPassphrase."\" -out ".$publicKeyPath.)
+
+Gerar Chave Global:
+openssl genpkey -genparam -algorithm DH -out chave-global.pem
+
+
+_____________________________________________________________________________________________________________________________
+
+ESCOLHA:
+
+Chave Privada e publica baseada na global
+openssl genpkey -param file pendriveSecao/chave-global.pem -out privTEscolha.pem
+openssl pkey -in privTEscolha.pem -pubout -out pendriveSecao/publicTEscolha.pem
+
+Derivar
+openssl pkeyutl -derive -inkey privTEscolha.pem -peerkey pendriveSecao/publicTDeposito.pem -out keyTEscolhaTDeposito.bin
+
+ETAPA DE VOTAÇÃO . XX seria o numero do voto
+openssl aes-256-cbc -e -kfile keyTEscolhaTDeposito.bin -out pendrive/voto-secreto.bin <<< XX
+
+sha512sum pendrive/voto-secreto.bin > pendrive/voto-secreto.hash
+
+
+openssl dgst -sha512 -sign pendrive/12345_private.pem -out pendrive/voto-secreto.sign pendrive/voto-secreto.hash
+
+_____________________________________________________________________________________________________________________________
+
+MESÁRIO COMANDOS:
+
+GERAR CHAVES
+openssl genpkey -paramfile pendriveSecao/chave-global.pem -out privTMesa.pem
+openssl pkey -in privTMesa.pem -pubout -out pendriveSecao/publicTMesa.pem
+
+(Teste para criptografar
+openssl enc -aes-256-cbc -salt -in segredo.txt -out segredo.enc -pass file:pendriveSecao/chave-global.pem
+Teste para descriptografar
+openssl enc -d -aes-256-cbc -in segredo.enc -out segredo_decifrado.txt -pass file:pendriveSecao/chave-global.pem
+)
+
+
+-- ETAPA DE VOTAÇÃO --
+Verificar se foi assinado pela mesma pessoa que o apresentou
+openssl dgst -sha512 -verify 123_public.pem -signature pendrive/voto-secreto.sign pendrive/voto-secreto.hash
+
+Mesário assinar
+openssl dgst -sha512 -sign pendriveMesario/11111_private.pem -out pendrive/voto-secreto.sign pendrive/voto-secreto.hash
+
+
+_____________________________________________________________________________________________________________________________
+
+Deposito:
+openssl genpkey -paramfile pendriveSecao/chave-global.pem -out privTDeposito.pem
+openssl pkey -in privTDeposito.pem -pubout -out pendriveSecao/publicTDeposito.pem
+
+
+Derivar 
+openssl pkeyutl -derive -inkey privTDeposito.pem -peerkey pendriveSecao/publicTEscolha.pem -out keyTEscolhaTDeposito.bin
+
+
+-- ETAPA DE VOTAÇÃO --
+sha512sum pendrive/voto-secreto.bin > validacao
+
+openssl dgst -sha512 -verify 555_public.pem -signature pendrive/voto-secreto.sign validacao
+
+
+PythonScript << openssl aes-256-cbc -pbkdf2 -d -kfile keyTEscolhaTDeposito.bin -in pendrive/voto-secreto.bin
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+10
+
+openssl aes-256-cbc -e -kfile keyTEscolhaTDeposito.bin -out pendrive/voto-secreto.bin <<< XX
+
+openssl dgst -sha512 -sign pendrive/XXXXXXXXXXXX_private.pem -out pendrive/voto-secreto.sign pendrive/voto-secreto.hash
+
+openssl pkeyutl -derive -inkey privTEscolha.pem -peerkey pendriveSecao/publicTDeposito.pem -out keyTEscolhaTDeposito.bin
+openssl pkeyutl -derive -inkey privTDeposito.pem -peerkey pendriveSecao/publicTEscolha.pem -out keyTEscolhaTDeposito.bin
+
+openssl pkeyutl -derive -inkey privTEscolha.pem -peerkey pendriveSeção/publicTDeposito.pem -out keyTEscolhaTDeposito.bin

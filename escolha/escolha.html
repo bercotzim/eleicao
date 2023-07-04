@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+  <style>
+    body {
+      background-color: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .urna-eletronica {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 50px;
+      height: 500px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+    }
+
+    .tela {
+      display: flex;
+      font-size: 100px;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      height: 85%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      margin-right: 20px;
+    }
+
+    .teclado {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      width: 50%;
+    }
+
+    button {
+      font-weight: 800;
+      height: 100px;
+      background-color: #ccc;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+
+
+  <div class="urna-eletronica">
+    <div class="tela"></div>
+    <div class="teclado">
+
+
+      <button onclick="clicouNumero(7)">7</button>
+      <button onclick="clicouNumero(8)">8</button>
+      <button onclick="clicouNumero(9)">9</button>
+      <button onclick="clicouNumero(4)">4</button>
+      <button onclick="clicouNumero(5)">5</button>
+      <button onclick="clicouNumero(6)">6</button>
+      <button onclick="clicouNumero(1)">1</button>
+      <button onclick="clicouNumero(2)">2</button>
+      <button onclick="clicouNumero(3)">3</button>
+      <button style="background-color: rgb(255, 106, 0);" onclick="corrigeVoto()">Corrige</button>
+      <button onclick="clicouNumero(0)">0</button>
+      <button style="background-color: green;" onclick="confirmaVoto()">Confirma</button>
+
+    </div>
+  </div>
+
+  <script>
+    let voto = "";
+
+    function clicouNumero(numero) {
+      voto += numero;
+      exibirTela(voto);
+    }
+
+    function confirmaVoto() {
+      if (voto !== "") {
+        // Crie um objeto FormData e adicione o valor do voto
+        const formData = new FormData();
+        formData.append('numero_candidato', voto);
+
+        // Faça uma solicitação HTTP POST para o arquivo PHP
+        fetch('processar_voto.php', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => {
+            // Manipule a resposta do arquivo PHP
+            if (response.ok) {
+              return response.text();
+            } else {
+              throw new Error('Ocorreu um erro durante a solicitação.');
+            }
+          })
+          .then(responseText => {
+            // Processe a resposta do arquivo PHP
+            alert("Voto confirmado: " + voto);
+            voto = "";
+            exibirTela("");
+            console.log(responseText); // Imprima qualquer resposta do arquivo PHP
+
+            // Redirecione para confirmarvoto.html
+            window.location.href = "confirmarvoto.html";
+          })
+
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    }
+
+    function corrigeVoto() {
+      voto = "";
+      exibirTela("");
+    }
+
+    function exibirTela(texto) {
+      const tela = document.querySelector(".tela");
+      tela.textContent = texto;
+    }
+  </script>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    footer p {
+      text-align: center;
+      position: fixed;
+      font-weight: 600;
+      font-size: 15px;
+      bottom: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      width: 100%;
+    }
+  </style>
+
+  <footer>
+    <p>Desenvolvido por: Matheus Berçot Pinheiro</p>
+  </footer>
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    /* CSS for Assinar Voto */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+input[type="submit"] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+input:required:invalid,
+input:focus:invalid {
+    border-color: red;
+}
+
+input:required:valid {
+    border-color: #ccc;
+}
+
+
+
+</style>
+<body>
+
+    <p> Executar antes esse comando.
+        sha512sum E:/voto-secreto.bin > E:/voto-secreto.hash
+    </p>
+    <h1>Assinar Voto</h1>
+    <form method="POST" action="confirmar_voto.php">
+        <label for="numero_eleitor">Número do Eleitor:</label>
+        <input type="text" name="numero_eleitor" id="numero_eleitor" required><br>
+
+        <label for="senha">Senha:</label>
+        <input type="password" name="senha" id="senha" required><br>
+
+        <input type="submit" value="Assinar">
+    </form>
+    
+    <style>
+        body{
+            margin:0;
+        }
+        footer p {
+            text-align: center;
+            position: fixed;
+            font-weight: 600;
+            font-size: 15px;
+            bottom: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            width: 100%;
+        }
+    </style>
+    
+    <footer>
+        <p>Desenvolvido por: Matheus Berçot Pinheiro</p>
+    </footer>
+    
+</body>
+</html>

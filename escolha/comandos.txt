@@ -1,0 +1,8 @@
+
+Cifrar
+openssl rsautl -encrypt -inkey pendrivesecao/publicTEscolha.pem -pubin -in segredo.txt -out segredo.txt.enc
+
+
+
+Decifrar
+openssl rsautl -decrypt -inkey minhaChavePrivada.pem -in segredo.txt.enc -out segredo-revelado.txt
